@@ -61,11 +61,12 @@ class WC_Order_Item_Coupon extends WC_Order_Item {
 
 	/**
 	 * Set discounted tax amount.
+	 * InVite Modified -- Always set this to 0 since coupon discounts, working as vouchers, should not apply to taxes.
 	 *
 	 * @param string $value Discount tax.
 	 */
 	public function set_discount_tax( $value ) {
-		$this->set_prop( 'discount_tax', wc_format_decimal( $value ) );
+		$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
 	}
 
 	/*

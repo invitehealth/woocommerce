@@ -123,24 +123,27 @@ class WC_Order_Item_Product extends WC_Order_Item {
 
 	/**
 	 * Line subtotal tax (before discounts).
+	 * InVite Modified -- Also set line total tax, since discounts do not apply to tax.
 	 *
 	 * @param string $value Subtotal tax.
 	 */
 	public function set_subtotal_tax( $value ) {
 		$this->set_prop( 'subtotal_tax', wc_format_decimal( $value ) );
-	}
-
-	/**
-	 * Line total tax (after discounts).
-	 *
-	 * @param string $value Total tax.
-	 */
-	public function set_total_tax( $value ) {
 		$this->set_prop( 'total_tax', wc_format_decimal( $value ) );
 	}
 
 	/**
+	 * Line total tax (after discounts).
+	 * InVite Modified -- Do nothing. See set_subtotal_tax above.
+	 *
+	 * @param string $value Total tax.
+	 */
+	public function set_total_tax( $value ) {
+	}
+
+	/**
 	 * Set line taxes and totals for passed in taxes.
+	 * InVite Modified -- Ensure that the subtotal tax is also the total tax (avoid discounts, see set_subtotal_tax above).
 	 *
 	 * @param array $raw_tax_data Raw tax data.
 	 */
@@ -152,7 +155,7 @@ class WC_Order_Item_Product extends WC_Order_Item {
 		);
 		if ( ! empty( $raw_tax_data['total'] ) && ! empty( $raw_tax_data['subtotal'] ) ) {
 			$tax_data['subtotal'] = array_map( 'wc_format_decimal', $raw_tax_data['subtotal'] );
-			$tax_data['total']    = array_map( 'wc_format_decimal', $raw_tax_data['total'] );
+			$tax_data['total']    = array_map( 'wc_format_decimal', $raw_tax_data['subtotal'] );
 
 			// Subtotal cannot be less than total!
 			if ( array_sum( $tax_data['subtotal'] ) < array_sum( $tax_data['total'] ) ) {

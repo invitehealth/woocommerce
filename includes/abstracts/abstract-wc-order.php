@@ -620,12 +620,16 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 
 	/**
 	 * Set cart tax.
+	 * InVite Modified -- Remove discount_tax and add it to cart_tax.
 	 *
 	 * @param string $value Value to set.
 	 * @throws WC_Data_Exception Exception may be thrown if value is invalid.
 	 */
 	public function set_cart_tax( $value ) {
-		$this->set_prop( 'cart_tax', wc_format_decimal( $value ) );
+		$discount_tax = (float) $this->get_discount_tax();
+		$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
+		$value = (float) $value;
+		$this->set_prop( 'cart_tax', wc_format_decimal( $value + $discount_tax ) );
 		$this->set_total_tax( (float) $this->get_cart_tax() + (float) $this->get_shipping_tax() );
 	}
 

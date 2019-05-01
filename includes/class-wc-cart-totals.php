@@ -847,6 +847,7 @@ final class WC_Cart_Totals {
 
 	/**
 	 * Main cart totals.
+	 * InVite Modified -- Ensure that the cart displays the subtotal tax, not the total tax, to avoid coupons affecting tax.
 	 *
 	 * @since 3.2.0
 	 */
@@ -858,6 +859,9 @@ final class WC_Cart_Totals {
 		if ( has_action( 'woocommerce_calculate_totals' ) ) {
 			do_action( 'woocommerce_calculate_totals', $this->cart );
 		}
+		
+		$i = key($this->cart->taxes);
+		$this->cart->taxes[$i] = $cart->get_subtotal_tax();
 
 		// Allow plugins to filter the grand total, and sum the cart totals in case of modifications.
 		$this->cart->set_total( max( 0, apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart ) ) );

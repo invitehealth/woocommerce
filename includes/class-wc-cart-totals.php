@@ -847,7 +847,8 @@ final class WC_Cart_Totals {
 
 	/**
 	 * Main cart totals.
-	 * InVite Modified -- Ensure that the cart displays the subtotal tax, not the total tax, to avoid coupons affecting tax.
+	 * InVite Modified -- Ensure that the cart displays the subtotal+shipping tax,
+	 * not the total tax, to avoid coupons affecting taxes
 	 *
 	 * @since 3.2.0
 	 */
@@ -864,7 +865,13 @@ final class WC_Cart_Totals {
 		$this->cart->taxes[$i] = $cart->get_subtotal_tax();
 
 		// Allow plugins to filter the grand total, and sum the cart totals in case of modifications.
-		$this->cart->set_total( max( 0, apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart ) ) );
+		$ih_calctotal = apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart );
+		$ih_discounted_tax = $this->cart->get_total_tax();
+		$ih_original_tax = $this->cart->get_subtotal_tax();
+		$ih_shipping_tax = $this->cart->get_shipping_tax();
+		$ih_calctotal = round( ( $ih_calctotal - $ih_discounted_tax ) + $ih_original_tax + $ih_shipping_tax, $this->cart->dp );
+		
+		$this->cart->set_total( max( 0, $ih_calctotal ) );
 	}
 
 	/**

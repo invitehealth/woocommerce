@@ -816,17 +816,23 @@ final class WC_Cart_Totals {
 			do_action( 'woocommerce_calculate_totals', $this->cart );
 		}
 		
-		$i = key($this->cart->taxes);
-		$this->cart->taxes[$i] = $this->cart->get_subtotal_tax();
-
-		// Allow plugins to filter the grand total, and sum the cart totals in case of modifications.
-		$ih_calctotal = apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart );
-		$ih_discounted_tax = $this->cart->get_total_tax();
-		$ih_original_tax = $this->cart->get_subtotal_tax();
-		$ih_shipping_tax = $this->cart->get_shipping_tax();
-		$ih_calctotal = round( ( $ih_calctotal - $ih_discounted_tax ) + $ih_original_tax + $ih_shipping_tax, $this->cart->dp );
-		
-		$this->cart->set_total( max( 0, $ih_calctotal ) );
+		if(cart_check_if_tac_voucher($this->cart)){
+			// original
+			$this->cart->set_total( max( 0, apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart ) ) );
+		} else {
+			// alban
+			$i = key($this->cart->taxes);
+			$this->cart->taxes[$i] = $this->cart->get_subtotal_tax();
+	
+			// Allow plugins to filter the grand total, and sum the cart totals in case of modifications.
+			$ih_calctotal = apply_filters( 'woocommerce_calculated_total', $this->get_total( 'total' ), $this->cart );
+			$ih_discounted_tax = $this->cart->get_total_tax();
+			$ih_original_tax = $this->cart->get_subtotal_tax();
+			$ih_shipping_tax = $this->cart->get_shipping_tax();
+			$ih_calctotal = round( ( $ih_calctotal - $ih_discounted_tax ) + $ih_original_tax + $ih_shipping_tax, $this->cart->dp );
+			
+			$this->cart->set_total( max( 0, $ih_calctotal ) );
+		}
 	}
 
 	/**

@@ -123,7 +123,24 @@ class WC_Order_Item_Product extends WC_Order_Item {
 	 */
 	public function set_subtotal_tax( $value ) {
 		$this->set_prop( 'subtotal_tax', wc_format_decimal( $value ) );
-		$this->set_prop( 'total_tax', wc_format_decimal( $value ) );
+		
+		$tac_check = false;
+		
+		if(is_admin()){
+			// check if coupon is tac, assign true if tac coupon
+			$coupon_array = $this->get_order()->get_used_coupons();
+			$tac_check = order_check_if_tac_voucher($coupon_array);
+		} else {
+			$tac_check = WC()->session->get('is_tac_voucher');
+		}
+		
+		if($tac_check){
+			// original
+			// nothing
+		} else {
+			// alban
+			$this->set_prop( 'total_tax', wc_format_decimal( $value ) );
+		}
 	}
 
 	/**
@@ -134,6 +151,23 @@ class WC_Order_Item_Product extends WC_Order_Item {
 	 * @throws WC_Data_Exception
 	 */
 	public function set_total_tax( $value ) {
+		$tac_check = false;
+		
+		if(is_admin()){
+			// check if coupon is tac, assign true if tac coupon
+			$coupon_array = $this->get_order()->get_used_coupons();
+			$tac_check = order_check_if_tac_voucher($coupon_array);
+		} else {
+			$tac_check = WC()->session->get('is_tac_voucher');
+		}
+		
+		if($tac_check){
+			// original
+			$this->set_prop( 'total_tax', wc_format_decimal( $value ) );
+		} else {
+			// alban
+			// nothing
+		}
 	}
 
 	/**
@@ -151,7 +185,24 @@ class WC_Order_Item_Product extends WC_Order_Item {
 		);
 		if ( ! empty( $raw_tax_data['total'] ) && ! empty( $raw_tax_data['subtotal'] ) ) {
 			$tax_data['subtotal'] = array_map( 'wc_format_decimal', $raw_tax_data['subtotal'] );
-			$tax_data['total']    = array_map( 'wc_format_decimal', $raw_tax_data['subtotal'] );
+			
+			$tac_check = false;
+			
+			if(is_admin()){
+				// check if coupon is tac, assign true if tac coupon
+				$coupon_array = $this->get_order()->get_used_coupons();
+				$tac_check = order_check_if_tac_voucher($coupon_array);
+			} else {
+				$tac_check = WC()->session->get('is_tac_voucher');
+			}
+			
+			if($tac_check){
+				// original
+				$tax_data['total']    = array_map( 'wc_format_decimal', $raw_tax_data['total'] );
+			} else {
+				// alban
+				$tax_data['total']    = array_map( 'wc_format_decimal', $raw_tax_data['subtotal'] );
+			}
 
 			// Subtotal cannot be less than total!
 			if ( array_sum( $tax_data['subtotal'] ) < array_sum( $tax_data['total'] ) ) {

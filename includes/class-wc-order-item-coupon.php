@@ -68,7 +68,22 @@ class WC_Order_Item_Coupon extends WC_Order_Item {
 	 * @throws WC_Data_Exception
 	 */
 	public function set_discount_tax( $value ) {
-		$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
+		$tac_check = false;
+		
+		$coupon_code = (int) $this->get_code();
+		// first three	digits	coupon,	remove sign if negative,	length
+		$firstThree = (int) substr($coupon_code, $coupon_code < 0 ? 1 : 0, 3);
+		if($firstThree == 903 && strlen($coupon_code) == 9){
+			$tac_check = true;
+		}
+		
+		if($tac_check){
+			// original
+			$this->set_prop( 'discount_tax', wc_format_decimal( $value ) );
+		} else {
+			// alban
+			$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
+		}
 	}
 
 	/*

@@ -614,10 +614,27 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	 * @throws WC_Data_Exception
 	 */
 	public function set_cart_tax( $value ) {
-		$discount_tax = (float) $this->get_discount_tax();
-		$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
-		$value = (float) $value;
-		$this->set_prop( 'cart_tax', wc_format_decimal( $value + $discount_tax ) );
+		$tac_check = false;
+		
+		if(is_admin()){
+			// check if coupon is tac, assign true if tac coupon
+			$coupon_array = $this->get_used_coupons();
+			$tac_check = order_check_if_tac_voucher($coupon_array);
+		} else {
+			$tac_check = WC()->session->get('is_tac_voucher');
+		}
+		
+		if($tac_check){
+			// original
+			$this->set_prop( 'cart_tax', wc_format_decimal( $value ) );
+		} else {
+			// alban
+			$discount_tax = (float) $this->get_discount_tax();
+			$this->set_prop( 'discount_tax', wc_format_decimal( 0 ) );
+			$value = (float) $value;
+			$this->set_prop( 'cart_tax', wc_format_decimal( $value + $discount_tax ) );
+		}
+		// alban
 		$this->set_total_tax( (float) $this->get_cart_tax() + (float) $this->get_shipping_tax() );
 	}
 

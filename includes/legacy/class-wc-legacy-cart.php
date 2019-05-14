@@ -129,7 +129,7 @@ abstract class WC_Legacy_Cart {
 
 			// Arrays returned by reference to allow modification without notices. TODO: Remove in 4.0.
 			case 'taxes' :
-				wc_deprecated_function( 'WC_Cart->taxes', '3.2', sprintf( 'getters (%s) and setters (%s)', 'WC_Cart::get_cart_contents_taxes()', 'WC_Cart::set_cart_contents_taxes()' ) );
+				//wc_deprecated_function( 'WC_Cart->taxes', '3.2', sprintf( 'getters (%s) and setters (%s)', 'WC_Cart::get_cart_contents_taxes()', 'WC_Cart::set_cart_contents_taxes()' ) );
 				$value = &$this->totals[ 'cart_contents_taxes' ];
 				break;
 			case 'shipping_taxes' :
